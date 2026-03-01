@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Scanner - Smart Bin</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-recycle"></i>
+            <span>Smart Bin</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li>
+                <a href="/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="/scanner">
+                    <i class="fas fa-camera"></i>
+                    <span>Smart Scanner</span>
+                </a>
+            </li>
+            <li>
+                <a href="/assistant">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant</span>
+                </a>
+            </li>
+            <li>
+                <a href="/leaderboard">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content scanner-page">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-left">
+                <h2>Smart Scanner</h2>
+                <p>AI-Powered Waste Identification</p>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+                <select id="languageSelect" onchange="changeLanguage(this.value)" style="padding: 8px; border-radius: 5px; background: var(--card-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.1);">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="zh">中文</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Scanner Section -->
+        <div class="scanner-container">
+            <!-- Upload Section -->
+            <div class="scanner-card upload-section">
+                <div class="card-header">
+                    <i class="fas fa-camera"></i>
+                    <h2>Scan Your Waste</h2>
+                </div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div id="cameraContainer" style="display: none; margin-bottom: 15px;">
+                        <video id="cameraFeed" autoplay playsinline style="width: 100%; max-width: 400px; border-radius: 10px;"></video>
+                        <canvas id="cameraCanvas" style="display: none;"></canvas>
+                        <div style="margin-top: 10px;">
+                            <button class="btn-scan" onclick="captureImage()" style="background: var(--secondary-color);">
+                                <i class="fas fa-camera"></i> Capture
+                            </button>
+                            <button class="btn-scan" onclick="stopCamera()" style="background: var(--danger-color);">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="uploadControls">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload or drag and drop</p>
+                        <button class="btn-scan" onclick="startCamera()" style="margin-bottom: 15px; background: var(--secondary-color);">
+                            <i class="fas fa-camera"></i> Use Camera
+                        </button>
+                        <span>or</span>
+                        <input type="text" id="itemDescription" placeholder="Describe the item (e.g., plastic bottle, cardboard box)">
+                        <button class="btn-scan" onclick="scanItem()">
+                            <i class="fas fa-search"></i> Analyze Item
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sample Items -->
+                <div class="sample-items">
+                    <p>Try these samples:</p>
+                    <div class="sample-btns">
+                        <button onclick="setSample('plastic bottle')">Plastic Bottle</button>
+                        <button onclick="setSample('cardboard box')">Cardboard Box</button>
+                        <button onclick="setSample('glass jar')">Glass Jar</button>
+                        <button onclick="setSample('aluminum can')">Aluminum Can</button>
+                        <button onclick="setSample('food waste')">Food Waste</button>
+                        <button onclick="setSample('old phone')">Old Phone</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="scanner-card result-section" id="resultSection" style="display: none;">
+                <div class="card-header">
+                    <i class="fas fa-robot"></i>
+                    <h2>AI Analysis Result</h2>
+                </div>
+
+                <div class="result-content">
+                    <!-- Item Info -->
+                    <div class="result-item">
+                        <div class="result-icon" id="resultIcon">
+                            <i class="fas fa-recycle"></i>
+                        </div>
+                        <div class="result-details">
+                            <h3 id="itemName">Plastic Bottle</h3>
+                            <span class="category-badge" id="categoryBadge">Plastic</span>
+                        </div>
+                    </div>
+
+                    <!-- Recycling Status -->
+                    <div class="recycling-status" id="recyclingStatus">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Recyclable</span>
+                    </div>
+
+                    <!-- AI Tip -->
+                    <div class="ai-tip">
+                        <div class="tip-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <h3>AI Recycling Tip</h3>
+                        </div>
+                        <p id="aiTip">Rinse plastic containers before recycling and remove caps. Place plastics in the blue bin.</p>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="instructions">
+                        <h4><i class="fas fa-list-ol"></i> How to Recycle:</h4>
+                        <ol id="instructionsList">
+                            <li>Clean the item thoroughly</li>
+                            <li>Remove any labels if required</li>
+                            <li>Place in plastic recycling bin</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <button class="btn-scan-again" onclick="resetScanner()">
+                    <i class="fas fa-redo"></i> Scan Another Item
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div class="scanner-card loading-section" id="loadingSection" style="display: none;">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Analyzing with AI...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <p>Smart City Hackathon 2026 | Powered by IoT & AI</p>
+        </footer>
+    </main>
+
+    <script src="/static/script.js"></script>
+    <script>
+        let stream = null;
+        let capturedImage = null;
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                const video = document.getElementById('cameraFeed');
+                video.srcObject = stream;
+                document.getElementById('cameraContainer').style.display = 'block';
+                document.getElementById('uploadControls').style.display = 'none';
+            } catch (err) {
+                alert('Error accessing camera: ' + err.message);
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            document.getElementById('cameraContainer').style.display = 'none';
+            document.getElementById('uploadControls').style.display = 'block';
+        }
+
+        function captureImage() {
+            const video = document.getElementById('cameraFeed');
+            const canvas = document.getElementById('cameraCanvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            capturedImage = canvas.toDataURL('image/jpeg');
+            stopCamera();
+            
+            // Automatically scan the captured image
+            scanItem(capturedImage);
+        }
+
+        function setSample(item) {
+            document.getElementById('itemDescription').value = item;
+            capturedImage = null;
+        }
+
+        function scanItem(imageData = null) {
+            const description = document.getElementById('itemDescription').value.trim();
+            
+            if (!imageData && !description) {
+                alert('Please enter an item description, use the camera, or select a sample!');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('uploadArea').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+
+            // Call AI API
+            fetch('/api/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    description: description,
+                    image: imageData || capturedImage,
+                    language: localStorage.getItem('app_language') || 'en'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Hide loading
+                document.getElementById('loadingSection').style.display = 'none';
+                
+                if (data.success) {
+                    showResult(data);
+                } else {
+                    alert('Error: ' + data.message);
+                    resetScanner();
+                }
+            })
+            .catch(err => {
+                alert('Error scanning item!');
+                resetScanner();
+            });
+        }
+
+        function showResult(data) {
+            document.getElementById('resultSection').style.display = 'block';
+            
+            // Set item details
+            document.getElementById('itemName').textContent = data.item;
+            document.getElementById('categoryBadge').textContent = data.category.charAt(0).toUpperCase() + data.category.slice(1);
+            
+            // Set icon based on category
+            const iconMap = {
+                'plastic': 'fa-bottle-water',
+                'paper': 'fa-box-open',
+                'glass': 'fa-wine-bottle',
+                'metal': 'fa-can-food',
+                'organic': 'fa-leaf',
+                'electronics': 'fa-mobile-screen'
+            };
+            
+            const iconClass = iconMap[data.category] || 'fa-recycle';
+            document.getElementById('resultIcon').innerHTML = `<i class="fas ${iconClass}"></i>`;
+            
+            // Set recycling status
+            const statusEl = document.getElementById('recyclingStatus');
+            if (data.recyclable) {
+                statusEl.innerHTML = '<i class="fas fa-check-circle"></i><span>Recyclable</span>';
+                statusEl.className = 'recycling-status recyclable';
+            } else {
+                statusEl.innerHTML = '<i class="fas fa-times-circle"></i><span>Not Recyclable</span>';
+                statusEl.className = 'recycling-status not-recyclable';
+            }
+            
+            // Set AI tip
+            document.getElementById('aiTip').textContent = data.tip;
+            
+            // Set instructions
+            document.getElementById('instructionsList').innerHTML = data.instructions.split('\n').map(i => `<li>${i}</li>`).join('');
+        }
+
+        function resetScanner() {
+            document.getElementById('uploadArea').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('itemDescription').value = '';
+        }
+
+        function logout() {
+            fetch('/api/logout', { method: 'POST' })
+                .then(() => window.location.href = '/');
+        }
+    </script>
+</body>
+</html>

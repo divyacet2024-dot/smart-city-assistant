@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authority Dashboard - Smart Bin</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-shield-alt"></i>
+            <span>Authority Portal</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="active">
+                <a href="/authority">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Overview</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-truck"></i>
+                    <span>Fleet Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Reports & Issues</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-left">
+                <h2>Authority Dashboard</h2>
+                <p>City-wide Waste Management Overview</p>
+            </div>
+            <div class="header-right">
+                <div class="user-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- City Stats -->
+            <div class="card stats-card" style="grid-column: span 2;">
+                <div class="card-header">
+                    <i class="fas fa-city"></i>
+                    <h2>City Statistics</h2>
+                </div>
+                <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+                    <div class="stat-item">
+                        <span class="stat-number">1,245</span>
+                        <span class="stat-label">Total Bins</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" style="color: var(--danger-color);">42</span>
+                        <span class="stat-label">Critical Bins (>90%)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">18</span>
+                        <span class="stat-label">Active Trucks</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Pending Issues</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Alerts -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-bell"></i>
+                    <h2>Recent Alerts</h2>
+                </div>
+                <div class="status-details">
+                    <div class="detail-item" style="border-left: 4px solid var(--danger-color);">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--danger-color);"></i>
+                        <div>
+                            <strong>Ward 12, Main Street</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Bin Full (95%) - Needs immediate pickup</p>
+                        </div>
+                    </div>
+                    <div class="detail-item" style="border-left: 4px solid var(--warning-color);">
+                        <i class="fas fa-tools" style="color: var(--warning-color);"></i>
+                        <div>
+                            <strong>Ward 5, Park Ave</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Maintenance reported: Bad Odor</p>
+                        </div>
+                    </div>
+                    <div class="detail-item" style="border-left: 4px solid var(--primary-color);">
+                        <i class="fas fa-check-circle" style="color: var(--primary-color);"></i>
+                        <div>
+                            <strong>Ward 8, Market St</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Pickup completed successfully</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card actions-card">
+                <div class="card-header">
+                    <i class="fas fa-bolt"></i>
+                    <h2>Authority Actions</h2>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn request" onclick="dispatchTruck()">
+                        <i class="fas fa-truck-fast"></i>
+                        Dispatch Truck
+                    </button>
+                    <button class="action-btn schedule" onclick="broadcastMessage()">
+                        <i class="fas fa-bullhorn"></i>
+                        Broadcast Alert
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Alert/Result Section -->
+            <div id="result" class="result-card" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <p id="resultMessage"></p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <p>Smart City Hackathon 2026 | Powered by IoT & AI</p>
+        </footer>
+    </main>
+
+    <script>
+        function dispatchTruck() {
+            const ward = prompt('Enter Ward number to dispatch truck:');
+            if (ward) {
+                showResult(`Truck dispatched to Ward ${ward} successfully!`);
+            }
+        }
+
+        function broadcastMessage() {
+            const msg = prompt('Enter message to broadcast to all users:');
+            if (msg) {
+                showResult('Message broadcasted successfully!');
+            }
+        }
+
+        function showResult(message) {
+            const resultDiv = document.getElementById('result');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            if (resultDiv && resultMessage) {
+                resultMessage.textContent = message;
+                resultDiv.style.display = 'block';
+                
+                setTimeout(() => {
+                    resultDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function logout() {
+            fetch('/api/logout', { method: 'POST' })
+                .then(() => window.location.href = '/');
+        }
+    </script>
+</body>
+</html>

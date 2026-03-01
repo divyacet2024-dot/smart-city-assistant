@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Smart Bin</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-recycle"></i>
+            <span>Smart Bin</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="active">
+                <a href="/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/scanner">
+                    <i class="fas fa-camera"></i>
+                    <span>Smart Scanner</span>
+                </a>
+            </li>
+            <li>
+                <a href="/assistant">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant</span>
+                </a>
+            </li>
+            <li>
+                <a href="/leaderboard">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-left">
+                <h2>Welcome, {{ user.name if user.name else 'User' }}!</h2>
+                <p>Smart City Waste Management Dashboard</p>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+                <select id="languageSelect" onchange="changeLanguage(this.value)" style="padding: 8px; border-radius: 5px; background: var(--card-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.1);">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="zh">中文</option>
+                </select>
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Bin Status Card -->
+            <div class="card status-card">
+                <div class="card-header">
+                    <i class="fas fa-trash-alt"></i>
+                    <h2>Bin Status</h2>
+                </div>
+                <div class="bin-visual">
+                    <div class="bin-icon">
+                        <div class="fill-level" id="fillLevel" style="height: 65%;"></div>
+                    </div>
+                    <div class="bin-info">
+                        <span class="percentage" id="percentage">65%</span>
+                        <span class="label">Fill Level</span>
+                    </div>
+                </div>
+                <div class="status-details">
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="location">Ward 12, Main Street</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-battery-half"></i>
+                        <span id="battery">Battery: 82%</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-temperature-half"></i>
+                        <span id="temperature">Temperature: 28°C</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card actions-card">
+                <div class="card-header">
+                    <i class="fas fa-bolt"></i>
+                    <h2>Quick Actions</h2>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn request" onclick="requestPickup()">
+                        <i class="fas fa-truck"></i>
+                        Request Pickup
+                    </button>
+                    <button class="action-btn report" onclick="reportIssue()">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Report Issue
+                    </button>
+                    <button class="action-btn schedule" onclick="schedulePickup()">
+                        <i class="fas fa-calendar-alt"></i>
+                        Schedule Pickup
+                    </button>
+                    <button class="action-btn alert" onclick="sendAlert()">
+                        <i class="fas fa-bell"></i>
+                        Ward Alert
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card stats-card">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>Weekly Statistics</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number" id="collections">156</span>
+                        <span class="stat-label">Collections</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="wasteCollected">2.4t</span>
+                        <span class="stat-label">Waste Collected</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">Efficiency</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Active Bins</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="card quick-links-card">
+                <div class="card-header">
+                    <i class="fas fa-link"></i>
+                    <h2>Quick Access</h2>
+                </div>
+                <div class="quick-links">
+                    <a href="/scanner" class="quick-link">
+                        <i class="fas fa-camera"></i>
+                        <span>Smart Scanner</span>
+                    </a>
+                    <a href="/assistant" class="quick-link">
+                        <i class="fas fa-robot"></i>
+                        <span>AI Assistant</span>
+                    </a>
+                    <a href="/leaderboard" class="quick-link">
+                        <i class="fas fa-trophy"></i>
+                        <span>Leaderboard</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Eco Tips Card -->
+            <div class="card eco-tips-card">
+                <div class="card-header">
+                    <i class="fas fa-lightbulb"></i>
+                    <h2>Daily Eco Tip</h2>
+                </div>
+                <div class="eco-tip-content" id="ecoTipContent">
+                    <div class="tip-category" id="tipCategory">Loading...</div>
+                    <p class="tip-text" id="tipText">Fetching eco tip...</p>
+                    <div class="tip-points">
+                        <i class="fas fa-star"></i>
+                        <span id="tipPoints">+10 pts</span>
+                    </div>
+                </div>
+                <button class="btn-refresh" onclick="loadEcoTips()">
+                    <i class="fas fa-sync-alt"></i> New Tip
+                </button>
+            </div>
+
+            <!-- Notifications/Alerts Card -->
+            <div class="card notifications-card">
+                <div class="card-header">
+                    <i class="fas fa-bell"></i>
+                    <h2>🔔 Alerts & Notifications</h2>
+                </div>
+                <div class="notifications-list" id="notificationsList" style="max-height: 200px; overflow-y: auto;">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Electricity Schedule Card -->
+            <div class="card electricity-card" style="border-left: 4px solid #ffc107;">
+                <div class="card-header">
+                    <i class="fas fa-bolt" style="color: #ffc107;"></i>
+                    <h2>⚡ Electricity Schedule</h2>
+                </div>
+                <div class="electricity-schedule" id="electricitySchedule" style="max-height: 180px; overflow-y: auto;">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <button class="btn-report" onclick="showElectricityReport()" style="margin-top: 10px; background: #ffc107; color: #000; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-exclamation-triangle"></i> Report Problem
+                </button>
+            </div>
+
+            <!-- Water Schedule Card -->
+            <div class="card water-card" style="border-left: 4px solid #0dcaf0;">
+                <div class="card-header">
+                    <i class="fas fa-tint" style="color: #0dcaf0;"></i>
+                    <h2>💧 Water Supply Schedule</h2>
+                </div>
+                <div class="water-schedule" id="waterSchedule" style="max-height: 180px; overflow-y: auto;">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <button class="btn-report" onclick="showWaterReport()" style="margin-top: 10px; background: #0dcaf0; color: #000; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-exclamation-triangle"></i> Report Problem
+                </button>
+            </div>
+
+            <!-- Collection Schedule Card -->
+            <div class="card schedule-card">
+                <div class="card-header">
+                    <i class="fas fa-calendar-week"></i>
+                    <h2>Collection Schedule</h2>
+                </div>
+                <div class="schedule-list" id="scheduleList">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <div class="next-collection">
+                    <span class="label">Next Collection:</span>
+                    <span class="value" id="nextCollection">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Carbon Footprint Card -->
+            <div class="card carbon-card">
+                <div class="card-header">
+                    <i class="fas fa-leaf"></i>
+                    <h2>Carbon Impact</h2>
+                </div>
+                <div class="carbon-stats" id="carbonStats">
+                    <div class="carbon-item">
+                        <i class="fas fa-cloud"></i>
+                        <span class="carbon-value" id="co2Saved">0</span>
+                        <span class="carbon-label">kg CO2 Saved</span>
+                    </div>
+                    <div class="carbon-item">
+                        <i class="fas fa-tree"></i>
+                        <span class="carbon-value" id="treesEquivalent">0</span>
+                        <span class="carbon-label">Trees Equivalent</span>
+                    </div>
+                    <div class="carbon-item">
+                        <i class="fas fa-tint"></i>
+                        <span class="carbon-value" id="waterSaved">0</span>
+                        <span class="carbon-label">L Water Saved</span>
+                    </div>
+                    <div class="carbon-item">
+                        <i class="fas fa-bolt"></i>
+                        <span class="carbon-value" id="energySaved">0</span>
+                        <span class="carbon-label">kWh Energy Saved</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Card -->
+            <div class="card achievements-card">
+                <div class="card-header">
+                    <i class="fas fa-award"></i>
+                    <h2>Achievements</h2>
+                </div>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Bin Locator Card -->
+            <div class="card bin-locator-card">
+                <div class="card-header">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h2>Nearby Bins</h2>
+                </div>
+                <div class="bins-list" id="binsList">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <button class="btn-view-all" onclick="showAllBins()">
+                    <i class="fas fa-search"></i> View All Locations
+                </button>
+            </div>
+
+            <!-- User Stats Card -->
+            <div class="card user-stats-card">
+                <div class="card-header">
+                    <i class="fas fa-user-circle"></i>
+                    <h2>Your Stats</h2>
+                </div>
+                <div class="user-stats-grid" id="userStatsGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Alert/Result Section -->
+            <div id="result" class="result-card" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <p id="resultMessage"></p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <p>Smart City Hackathon 2026 | Powered by IoT & AI</p>
+        </footer>
+    </main>
+
+    <script src="/static/script.js"></script>
+    <script>
+        // Load bin status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBinStatus();
+            loadEcoTips();
+            loadSchedule();
+            loadCarbonFootprint();
+            loadAchievements();
+            loadBins();
+            loadUserStats();
+            setInterval(updateBinStatus, 30000);
+        });
+
+        function updateBinStatus() {
+            fetch('/api/bin-status')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('fillLevel').style.height = data.fill_level + '%';
+                    document.getElementById('percentage').textContent = data.fill_level + '%';
+                    document.getElementById('location').textContent = data.location;
+                    document.getElementById('battery').textContent = 'Battery: ' + data.battery + '%';
+                    document.getElementById('temperature').textContent = 'Temperature: ' + data.temperature + '°C';
+                    
+                    // Update color based on fill level
+                    const fillElement = document.getElementById('fillLevel');
+                    const percentageElement = document.getElementById('percentage');
+                    if (data.fill_level >= 80) {
+                        fillElement.style.background = 'linear-gradient(180deg, #ef4444, #dc2626)';
+                        percentageElement.style.color = '#ef4444';
+                    } else if (data.fill_level >= 50) {
+                        fillElement.style.background = 'linear-gradient(180deg, #f59e0b, #d97706)';
+                        percentageElement.style.color = '#f59e0b';
+                    } else {
+                        fillElement.style.background = 'linear-gradient(180deg, #10b981, #059669)';
+                        percentageElement.style.color = '#10b981';
+                    }
+                })
+                .catch(err => console.error('Error updating bin status:', err));
+        }
+
+        function loadEcoTips() {
+            fetch('/api/eco-tips')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.daily_tip) {
+                        document.getElementById('tipCategory').textContent = data.daily_tip.category.toUpperCase();
+                        document.getElementById('tipText').textContent = data.daily_tip.tip;
+                        document.getElementById('tipPoints').textContent = '+' + data.daily_tip.points + ' pts';
+                    }
+                })
+                .catch(err => console.error('Error loading eco tips:', err));
+        }
+
+        function loadSchedule() {
+            fetch('/api/schedule')
+                .then(res => res.json())
+                .then(data => {
+                    // Show next 3 days
+                    const scheduleList = document.getElementById('scheduleList');
+                    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    const today = new Date().getDay();
+                    
+                    let scheduleHtml = '';
+                    for (let i = 0; i < 3; i++) {
+                        const dayIndex = (today + i) % 7;
+                        const dayData = data.schedule[dayIndex];
+                        if (dayData) {
+                            scheduleHtml += `
+                                <div class="schedule-item ${i === 0 ? 'today' : ''}">
+                                    <span class="day">${days[dayIndex]}</span>
+                                    <span class="types">${dayData.types.join(', ')}</span>
+                                </div>
+                            `;
+                        }
+                    }
+                    scheduleList.innerHTML = scheduleHtml;
+                    
+                    if (data.next_collection) {
+                        document.getElementById('nextCollection').textContent = 
+                            data.next_collection.types.join(', ') + ' - ' + data.next_collection.time;
+                    }
+                })
+                .catch(err => console.error('Error loading schedule:', err));
+        }
+
+        function loadCarbonFootprint() {
+            fetch('/api/carbon-footprint')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('co2Saved').textContent = data.total_saved + ' kg';
+                    document.getElementById('treesEquivalent').textContent = data.trees_equivalent;
+                    document.getElementById('waterSaved').textContent = data.water_saved + ' L';
+                    document.getElementById('energySaved').textContent = data.energy_saved + ' kWh';
+                })
+                .catch(err => console.error('Error loading carbon footprint:', err));
+        }
+
+        function loadAchievements() {
+            fetch('/api/achievements')
+                .then(res => res.json())
+                .then(data => {
+                    const grid = document.getElementById('achievementsGrid');
+                    let html = '';
+                    data.achievements.slice(0, 4).forEach(ach => {
+                        html += `
+                            <div class="achievement-item ${ach.unlocked ? 'unlocked' : 'locked'}">
+                                <i class="fas ${ach.icon}"></i>
+                                <span class="achievement-name">${ach.name}</span>
+                            </div>
+                        `;
+                    });
+                    grid.innerHTML = html;
+                })
+                .catch(err => console.error('Error loading achievements:', err));
+        }
+
+        function loadBins() {
+            fetch('/api/bins')
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('binsList');
+                    let html = '';
+                    data.bins.slice(0, 4).forEach(bin => {
+                        const icon = getBinIcon(bin.type);
+                        html += `
+                            <div class="bin-item">
+                                <i class="fas ${icon}"></i>
+                                <div class="bin-details">
+                                    <span class="bin-name">${bin.name}</span>
+                                    <span class="bin-address">${bin.address}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    list.innerHTML = html;
+                })
+                .catch(err => console.error('Error loading bins:', err));
+        }
+
+        function getBinIcon(type) {
+            const icons = {
+                'recycling': 'fa-recycle',
+                'general': 'fa-trash-alt',
+                'glass': 'fa-wine-bottle',
+                'organic': 'fa-leaf',
+                'e-waste': 'fa-mobile-alt',
+                'hazardous': 'fa-exclamation-triangle'
+            };
+            return icons[type] || 'fa-trash-alt';
+        }
+
+        function loadUserStats() {
+            fetch('/api/stats')
+                .then(res => res.json())
+                .then(data => {
+                    const grid = document.getElementById('userStatsGrid');
+                    grid.innerHTML = `
+                        <div class="stat-box">
+                            <i class="fas fa-qrcode"></i>
+                            <span class="stat-value">${data.total_scans}</span>
+                            <span class="stat-label">Scans</span>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fas fa-recycle"></i>
+                            <span class="stat-value">${data.items_recycled}</span>
+                            <span class="stat-label">Recycled</span>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fas fa-star"></i>
+                            <span class="stat-value">${data.points}</span>
+                            <span class="stat-label">Points</span>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fas fa-fire"></i>
+                            <span class="stat-value">${data.streak_days}</span>
+                            <span class="stat-label">Day Streak</span>
+                        </div>
+                    `;
+                })
+                .catch(err => console.error('Error loading user stats:', err));
+        }
+
+        function showAllBins() {
+            alert('Map view coming soon! Check the console for bin data.');
+            fetch('/api/bins')
+                .then(res => res.json())
+                .then(data => console.log('All bins:', data.bins));
+        }
+
+        function logout() {
+            fetch('/api/logout', { method: 'POST' })
+                .then(() => window.location.href = '/');
+        }
+    </script>
+</body>
+</html>

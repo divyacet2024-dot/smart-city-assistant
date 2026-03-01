@@ -1,0 +1,34 @@
+# ULTIMATE DEPLOY GUIDE - 2 MINUTES
+
+## Step 1: Go to Render.com
+1. Open browser → Go to https://render.com
+2. Click "Get Started" → Sign up with GitHub
+3. Authorize GitHub access
+
+## Step 2: Deploy
+1. After login, click "New" → "Web Service"
+2. In "GitHub" section, find and select:
+   Repository: "divyacet2024-dot/smart-city-assistant"
+3. Click "Connect"
+
+## Step 3: Configure
+Fill in these values:
+- Name: smart-bin
+- Environment: Python
+- Build Command: pip install -r requirements.txt
+- Start Command: gunicorn app:app
+
+## Step 4: Add API Key
+Click "Advanced" → "Environment Variables"
+Add:
+- Key: GEMINI_API_KEY
+- Value: (Get from https://aistudio.google.com/app/apikey)
+
+## Step 5: Deploy!
+Click "Create Web Service"
+
+## WAIT 2-3 MINUTES...
+Then your link will show like:
+https://smart-bin.onrender.com
+
+✅ DONE!

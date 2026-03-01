@@ -1,0 +1,4 @@
+# Smart City Assistant App Dependencies
+flask>=2.0.0
+google-generativeai>=0.3.0
+gunicorn>=20.0.0

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Smart Bin</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-recycle"></i>
+            <span>Smart Bin</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li>
+                <a href="/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/scanner">
+                    <i class="fas fa-camera"></i>
+                    <span>Smart Scanner</span>
+                </a>
+            </li>
+            <li>
+                <a href="/assistant">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="/leaderboard">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-left">
+                <h2>Community Leaderboard</h2>
+                <p>See who's making the biggest impact!</p>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+                <select id="languageSelect" onchange="changeLanguage(this.value)" style="padding: 8px; border-radius: 5px; background: var(--card-bg); color: var(--text-primary); border: 1px solid rgba(255,255,255,0.1);">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="zh">中文</option>
+                </select>
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Leaderboard Content -->
+        <div class="dashboard-grid" style="grid-template-columns: 1fr;">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-medal"></i>
+                    <h2>Top Recyclers This Month</h2>
+                </div>
+                
+                <div class="leaderboard-list" style="margin-top: 20px;">
+                    {% for entry in leaderboard %}
+                    <div class="leaderboard-item" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 10px; border-left: 4px solid {% if entry.rank == 1 %}#fbbf24{% elif entry.rank == 2 %}#9ca3af{% elif entry.rank == 3 %}#b45309{% else %}var(--primary-color){% endif %};">
+                        <div class="rank-info" style="display: flex; align-items: center; gap: 15px;">
+                            <div class="rank-number" style="font-size: 1.5rem; font-weight: bold; color: {% if entry.rank == 1 %}#fbbf24{% elif entry.rank == 2 %}#9ca3af{% elif entry.rank == 3 %}#b45309{% else %}var(--text-secondary){% endif %}; width: 30px; text-align: center;">
+                                #{{ entry.rank }}
+                            </div>
+                            <div class="user-details">
+                                <h3 style="margin: 0; font-size: 1.1rem;">{{ entry.name }}</h3>
+                                <span style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fas fa-award"></i> {{ entry.badge }}</span>
+                                <span style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 10px;"><i class="fas fa-map-marker-alt"></i> {{ entry.ward }}</span>
+                            </div>
+                        </div>
+                        <div class="contact-info" style="display: flex; align-items: center; gap: 15px;">
+                            <a href="tel:{{ entry.phone }}" style="color: var(--primary-color); font-size: 1.2rem;" title="Call"><i class="fas fa-phone"></i></a>
+                            <a href="mailto:{{ entry.email }}" style="color: var(--primary-color); font-size: 1.2rem;" title="Email"><i class="fas fa-envelope"></i></a>
+                            <div class="points-info" style="text-align: right;">
+                                <div style="font-size: 1.2rem; font-weight: bold; color: var(--primary-color);">{{ entry.points }}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Points</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255,193,7,0.1); border-radius: 10px; border-left: 4px solid #ffc107;">
+                    <h4 style="margin: 0 0 10px 0;"><i class="fas fa-info-circle"></i> Contact Top Recyclers</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Click the phone or email icons to contact top community members for recycling tips and collaboration!</p>
+                </div>
+            </div>
+            
+            <!-- User Stats -->
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h2>Your Impact</h2>
+                </div>
+                <div class="stats-grid" style="margin-top: 20px;">
+                    <div class="stat-item">
+                        <span class="stat-number">450</span>
+                        <span class="stat-label">Your Points</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">#12</span>
+                        <span class="stat-label">Your Rank</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">15kg</span>
+                        <span class="stat-label">CO2 Saved</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="page-footer">
+            <p>Smart City Hackathon 2026 | Powered by IoT & AI</p>
+        </footer>
+    </main>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

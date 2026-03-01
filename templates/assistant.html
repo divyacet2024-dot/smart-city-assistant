@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Assistant - Smart City</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Mobile-first styles for AI Assistant */
+        .assistant-page {
+            padding: 0 !important;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .page-header {
+            padding: 15px 20px !important;
+            flex-shrink: 0;
+        }
+
+        .page-header h2 {
+            font-size: 1.3rem !important;
+            margin: 0;
+        }
+
+        .page-header p {
+            font-size: 0.85rem !important;
+            margin: 5px 0 0 0;
+            opacity: 0.8;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: 12px 15px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .bot-message .message-avatar {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .user-message .message-avatar {
+            background: rgba(0,0,0,0.2);
+        }
+
+        .message-content {
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .message-content ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .message-content li {
+            margin: 4px 0;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .quick-questions {
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            margin: 10px 0;
+        }
+
+        .quick-questions p {
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .quick-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .quick-btns button {
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-btns button:active {
+            transform: scale(0.95);
+            background: rgba(255,255,255,0.3);
+        }
+
+        .chat-input-section {
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .chat-input-section input {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 25px;
+            border: none;
+            background: white;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .chat-input-section input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-send {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .btn-send:active {
+            transform: scale(0.95);
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 100% { opacity: 0.4; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-5px); }
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .welcome-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+        }
+
+        .welcome-card p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .language-select {
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .language-select option {
+            color: #333;
+        }
+    </style>
+</head>
+<body class="dashboard-page">
+    <!-- Mobile Header with Menu Toggle -->
+    <header class="mobile-header" style="display: none;">
+        <button class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h3>AI Assistant</h3>
+        <div style="width: 40px;"></div>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-robot"></i>
+            <span>Smart AI</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li>
+                <a href="/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/scanner">
+                    <i class="fas fa-camera"></i>
+                    <span>Smart Scanner</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="/assistant">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant</span>
+                </a>
+            </li>
+            <li>
+                <a href="/leaderboard">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content assistant-page">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-left">
+                <h2>Smart AI Assistant</h2>
+                <p>Ask me anything - I'm a powerful AI that can answer ALL your questions!</p>
+            </div>
+            <div class="header-right">
+                <select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="es">Espanol</option>
+                    <option value="fr">Francais</option>
+                    <option value="hi">Hindi</option>
+                    <option value="zh">Chinese</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Chat Container -->
+        <div class="chat-container" id="chatContainer">
+            <!-- Welcome Message -->
+            <div class="welcome-card">
+                <h3>Hello! I'm your Smart AI Assistant</h3>
+                <p>I can help you with ANY question - recycling, science, history, tech, health, cooking, or just about anything! What would you like to know?</p>
+            </div>
+
+            <!-- Chat History -->
+            <div id="chatHistory"></div>
+
+            <!-- Quick Questions -->
+            <div class="quick-questions">
+                <p>Try asking me about:</p>
+                <div class="quick-btns">
+                    <button onclick="askQuickQuestion('What is recycling and why is it important?')">Recycling</button>
+                    <button onclick="askQuickQuestion('How do I start composting at home?')">Composting</button>
+                    <button onclick="askQuickQuestion('What can I recycle at home?')">What to Recycle</button>
+                    <button onclick="askQuickQuestion('Tell me a fun fact')">Fun Facts</button>
+                    <button onclick="askQuickQuestion('How does AI work?')">AI Explained</button>
+                    <button onclick="askQuickQuestion('What is climate change?')">Climate Change</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="chat-input-section">
+            <input type="text" id="userQuestion" placeholder="Type your question here..." onkeypress="handleKeyPress(event)">
+            <button class="btn-send" onclick="sendQuestion()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </main>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <script src="/static/script.js"></script>
+    <script>
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.querySelector('.sidebar-overlay').classList.remove('active');
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendQuestion();
+            }
+        }
+
+        function sendQuestion() {
+            const question = document.getElementById('userQuestion').value.trim();
+            
+            if (!question) {
+                return;
+            }
+
+            // Add user message
+            addMessage(question, 'user');
+            document.getElementById('userQuestion').value = '';
+
+            // Show loading
+            addLoadingMessage();
+
+            // Call AI API
+            fetch('/api/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    question: question,
+                    language: localStorage.getItem('app_language') || 'en'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                removeLoadingMessage();
+                
+                if (data.success) {
+                    addMessage(data.answer, 'bot', true);
+                } else {
+                    addMessage('Sorry, I encountered an error. Please try again!', 'bot', true);
+                }
+            })
+            .catch(err => {
+                removeLoadingMessage();
+                addMessage('Sorry, I encountered an error. Please try again!', 'bot', true);
+            });
+
+            // Scroll to bottom
+            setTimeout(scrollToBottom, 100);
+        }
+
+        function askQuickQuestion(question) {
+            document.getElementById('userQuestion').value = question;
+            sendQuestion();
+        }
+
+        function addMessage(text, sender, isHTML = false) {
+            const chatHistory = document.getElementById('chatHistory');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}-message`;
+            
+            const avatarClass = sender === 'bot' ? 'fa-robot' : 'fa-user';
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            let content;
+            if (isHTML) {
+                content = `<div class="message-content">${text}</div>`;
+            } else {
+                content = `<div class="message-content"><p>${text}</p></div>`;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas ${avatarClass}"></i>
+                </div>
+                ${content}
+                <div class="message-time">${time}</div>
+            `;
+            
+            chatHistory.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function addLoadingMessage() {
+            const chatHistory = document.getElementById('chatHistory');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'chat-message bot-message loading-message';
+            loadingDiv.id = 'loadingMessage';
+            loadingDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            chatHistory.appendChild(loadingDiv);
+            scrollToBottom();
+        }
+
+        function removeLoadingMessage() {
+            const loadingMsg = document.getElementById('loadingMessage');
+            if (loadingMsg) {
+                loadingMsg.remove();
+            }
+        }
+
+        function scrollToBottom() {
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function logout() {
+            fetch('/api/logout', { method: 'POST' })
+                .then(() => window.location.href = '/');
+        }
+
+        // Check for mobile and show appropriate header
+        if (window.innerWidth <= 768) {
+            document.querySelector('.page-header').style.display = 'none';
+            document.querySelector('.mobile-header').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
